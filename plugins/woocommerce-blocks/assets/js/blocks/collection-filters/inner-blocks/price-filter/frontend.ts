@@ -11,17 +11,17 @@ import { HTMLElementEvent } from '@woocommerce/types';
 import { PriceFilterState } from './types';
 
 const getHrefWithFilters = ( state: PriceFilterState ) => {
-	const { minPrice = 0, maxPrice = 0, maxRange = 0 } = state;
+	const { minPrice = 0, maxPrice = 0, maxRange = 0, minRange = 0 } = state;
 	const url = new URL( window.location.href );
 	const { searchParams } = url;
 
-	if ( minPrice > 0 ) {
+	if ( minPrice > minRange && minPrice < maxRange ) {
 		searchParams.set( 'min_price', minPrice.toString() );
 	} else {
 		searchParams.delete( 'min_price' );
 	}
 
-	if ( maxPrice < maxRange ) {
+	if ( maxPrice < maxRange && maxPrice > minRange ) {
 		searchParams.set( 'max_price', maxPrice.toString() );
 	} else {
 		searchParams.delete( 'max_price' );
