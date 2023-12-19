@@ -71,8 +71,10 @@ final class BlockTemplateRegistry {
 	 * Get a single registered template.
 	 *
 	 * @param string $id ID of the template.
+	 *
+	 * @return BlockTemplateInterface|null
 	 */
-	public function get_registered( $id ): BlockTemplateInterface {
+	public function get_registered( $id ) {
 		return isset( $this->templates[ $id ] ) ? $this->templates[ $id ] : null;
 	}
 }
