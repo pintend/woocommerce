@@ -15,6 +15,7 @@ import { findBlock } from '@woocommerce/utils';
 /**
  * Internal dependencies
  */
+import { useCombinedIncompatibilityNotice } from '../incompatible-extension-notice/use-combined-incompatibility-notice';
 import { ModalContent } from './modal-content';
 import './editor.scss';
 
@@ -34,6 +35,20 @@ export function SwitchToClassicShortcodeButton( {
 	const openModal = () => setOpen( true );
 	const closeModal = () => setOpen( false );
 	const { undo } = useDispatch( coreStore );
+
+	// Skipping the first two values in the array.
+	const [ , , incompatibleExtensions, incompatibleExtensionsCount ] =
+		useCombinedIncompatibilityNotice( block );
+
+	const eventParams = {
+		shortcode: block === 'woocommerce/checkout' ? 'checkout' : 'cart',
+		incompatible_extensions: {
+			count: incompatibleExtensionsCount,
+			extensions: JSON.stringify( incompatibleExtensions ),
+		},
+	};
+
+	console.log( { incompatibleExtensions, incompatibleExtensionsCount } );
 
 	const switchButtonLabel =
 		block === 'woocommerce/cart'
@@ -64,17 +79,13 @@ export function SwitchToClassicShortcodeButton( {
 	};
 
 	const handleSwitchToClassicShortcodeClick = () => {
-		recordEvent( 'switch_to_classic_shortcode_click', {
-			shortcode: block === 'woocommerce/checkout' ? 'checkout' : 'cart',
-		} );
+		recordEvent( 'switch_to_classic_shortcode_click', eventParams );
 		openModal();
 	};
 
 	const handleUndoClick = () => {
 		undo();
-		recordEvent( 'switch_to_classic_shortcode_undo', {
-			shortcode: block === 'woocommerce/checkout' ? 'checkout' : 'cart',
-		} );
+		recordEvent( 'switch_to_classic_shortcode_undo', eventParams );
 	};
 
 	const handleSwitchClick = () => {
@@ -85,9 +96,7 @@ export function SwitchToClassicShortcodeButton( {
 					block === 'woocommerce/checkout' ? 'checkout' : 'cart',
 			} )
 		);
-		recordEvent( 'switch_to_classic_shortcode_confirm', {
-			shortcode: block === 'woocommerce/checkout' ? 'checkout' : 'cart',
-		} );
+		recordEvent( 'switch_to_classic_shortcode_confirm', eventParams );
 		selectClassicShortcodeBlock();
 		createInfoNotice( snackbarLabel, {
 			actions: [
@@ -102,9 +111,7 @@ export function SwitchToClassicShortcodeButton( {
 	};
 
 	const handleCancelClick = () => {
-		recordEvent( 'switch_to_classic_shortcode_cancel', {
-			shortcode: block === 'woocommerce/checkout' ? 'checkout' : 'cart',
-		} );
+		recordEvent( 'switch_to_classic_shortcode_cancel', eventParams );
 		closeModal();
 	};
 
